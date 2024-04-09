@@ -1,0 +1,55 @@
+version: '3'
+name: docker-local-infrastructure
+services:
+  # INFRASTRUCTURE SERVICES ###########################################################
+  mongodb:
+    container_name: mongo
+    image: mongo:latest
+    restart: always
+    volumes:
+      - "mongodb_data:/data/db"
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+  redis:
+    container_name: redis
+    image: redis:latest
+    restart: always
+    volumes:
+      - "redis_data:/data/db"
+    ports:
+      - "6379:6379"
+  postgres:
+    container_name: postgres
+    image: 'postgres:latest'
+    restart: always
+    volumes:
+    - './postgres_data:/var/lib/postgresql/data'
+    environment:
+    - POSTGRES_USER=${POSTGRES_USER}
+    - POSTGRES_PASSWORD=${POSTGRES_PW}
+    - POSTGRES_DB=${POSTGRES_DB} #optional (specify default database instead of $POSTGRES_DB)
+    ports:
+    - '5432:5432'
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:latest
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_MAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PW}
+    ports:
+      - "5050:80"
+    restart: always
+  # END INFRASTRUCTURE SERVICES ######################################################
+volumes:
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local
+networks:
+  default:
+    name: "docker-local-infrastructure"
